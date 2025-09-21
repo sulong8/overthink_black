@@ -18,6 +18,8 @@ file_path = 'data_old/math_test.jsonl'
 file_out_path = 'data_old/math_change.jsonl'
 flie_result_path = 'data_old/math_result.json'
 flie_all_path = 'data_old/math_all.json'
+overthink_tokens = ['wait', 'Alternatively', 'but', "Wait", "Maybe", "maybe"]
+attitude_tokens = ['difficult','complicated','diverse','multiple']
 
 def read_questions_from_jsonl(file_path):
     questions = []
@@ -115,6 +117,10 @@ class GeneticAlgorithm:
             for i, result in enumerate(results):
                 _, chat_usage = result
                 fitness = self.count_tokens(chat_usage)
+                for word in overthink_tokens:
+                    fitness = fitness + _.count(word) * 10
+                for word in attitude_tokens:
+                    fitness = fitness + _.count(word) * 10
                 population[i].fitness = fitness
                 token_count.append(fitness)
             return token_count
@@ -280,7 +286,7 @@ if __name__ == "__main__":
     problems = read_questions_from_jsonl(file_out_path)
     n = len(problems)
     print(n)
-    for i in range(8,9):
+    for i in range(0,1):
         initial_problems = []
         for j in range(5):
             index = (i + j) % n
@@ -307,14 +313,14 @@ if __name__ == "__main__":
 
         # 运行算法
         best_problem = ga.run(initial_problems)
-        best={}
-        best['question'] = str(best_problem)
-        print(best)
-        print('')
-        print(best_problem)
-        with open(file_final_path,'a') as f:
-            json.dump(best, f)
-            f.write('\n')
+        # best={}
+        # best['question'] = str(best_problem)
+        # print(best)
+        # print('')
+        # print(best_problem)
+        # with open(file_final_path,'a') as f:
+        #     json.dump(best, f)
+        #     f.write('\n')
         print("\n" + "=" * 50)
         print(f"最佳问题: {best_problem}")
         print(f"最佳适应度: {ga.best_fitness}")

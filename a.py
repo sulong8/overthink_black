@@ -285,28 +285,23 @@ if __name__ == "__main__":
     n = len(problems)
     print(n)
     for i in range(0,1):
-        initial_problems = []
-        problem_str = problems[0]
-        str_problem = problem_str.split(',')
-        a = Problem(str_problem)
-        problem_str = problems[1]
-        str_problem = problem_str.split(',')
-        b = Problem(str_problem)
-        print(a)
-        print('-'*30)
-        print(b)
-        # 创建遗传算法实例
+
         ga = GeneticAlgorithm(
             dataset=arg.dataset,
             num = i,
             model_name="deepseek-reasoner",
-            population_size=len(initial_problems),
+            population_size=2,
             elite_rate=0.4,
             crossover_rate=0.8,
             mutation_rate=0.1,
             generations=5
         )
-        re = ga.crossover(a, b)
-        for problem in re:
+        a = ga.model.agenerate("hello")
+        for i, result in enumerate(a):
+            _, chat_usage = result
+            print(chat_usage)
             print('-'*30)
-            print(problem)
+            print(_)
+            print(type(_))
+        print(a)
+

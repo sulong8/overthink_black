@@ -313,14 +313,7 @@ if __name__ == "__main__":
 
         # 运行算法
         best_problem = ga.run(initial_problems)
-        # best={}
-        # best['question'] = str(best_problem)
-        # print(best)
-        # print('')
-        # print(best_problem)
-        # with open(file_final_path,'a') as f:
-        #     json.dump(best, f)
-        #     f.write('\n')
+
         print("\n" + "=" * 50)
         print(f"最佳问题: {best_problem}")
         print(f"最佳适应度: {ga.best_fitness}")

@@ -13,3 +13,5 @@ test.py
 results.jsonl
 svamp_result.jsonl
 swanlog
+CLAUDE.md
+.gitignore

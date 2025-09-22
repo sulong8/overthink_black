@@ -286,9 +286,9 @@ if __name__ == "__main__":
     problems = read_questions_from_jsonl(file_out_path)
     n = len(problems)
     print(n)
-    for i in range(0,1):
+    for i in range(0,4):
         initial_problems = []
-        for j in range(5):
+        for j in range(10):
             index = (i + j) % n
             problem_str = problems[index]
             str_problem = problem_str.split(',')
@@ -308,7 +308,7 @@ if __name__ == "__main__":
             elite_rate=0.4,
             crossover_rate=0.8,
             mutation_rate=0.1,
-            generations=5
+            generations=10
         )
 
         # 运行算法

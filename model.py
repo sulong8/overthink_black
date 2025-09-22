@@ -13,35 +13,47 @@ BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
 
 class TargetModel:
-    def __init__(self, model_name):
+    def __init__(self, model_name: str, max_tokens: int = 8192):
         self.model_name = model_name
         self.client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
         self.async_client = AsyncOpenAI(api_key=API_KEY, base_url=BASE_URL)
+        self.max_tokens = max_tokens
 
-    def generate(self, prompt):
+    def generate(self, prompt_or_conv: Union[str, Conversation],
+                 temperature: float = 0.7,
+                 top_p: float = 1.0,
+                 max_n_tokens: int = None):
+        """支持 str 或 Conversation 作为输入"""
+        if isinstance(prompt_or_conv, str):
+            messages = [{"role": "user", "content": prompt_or_conv}]
+        elif isinstance(prompt_or_conv, Conversation):
+            messages = prompt_or_conv.to_openai_api_messages()
+        else:
+            raise TypeError("Input must be str or Conversation")
+
         completion = self.client.chat.completions.create(
             model=self.model_name,
-            messages=[{"role": "user", "content": prompt}],
+            messages=messages,
+            max_tokens=max_n_tokens or self.max_tokens,
+            temperature=temperature,
         )
-        chat_usage = None
-        if hasattr(completion, "usage") and completion.usage is not None:
-            chat_usage = completion.usage
+        chat_usage = getattr(completion, "usage", None)
         return completion.choices[0].message.content, chat_usage
+
     def agenerate(self, prompts: List[str]):
-        async def _agenerate(prompt):
+        async def _agenerate(prompt: str):
             completion = await self.async_client.chat.completions.create(
                 model=self.model_name,
                 messages=[{"role": "user", "content": prompt}],
                 stream=False
             )
-            chat_usage = None
-            if hasattr(completion, "usage") and completion.usage is not None:
-                chat_usage = completion.usage
+            chat_usage = getattr(completion, "usage", None)
             return completion.choices[0].message.content, chat_usage
+
         async def run():
             tasks = [_agenerate(prompt) for prompt in prompts]
-            results = await asyncio.gather(*tasks)
-            return results
+            return await asyncio.gather(*tasks)
+
         return asyncio.run(run())
 
 class AttackerModel:
